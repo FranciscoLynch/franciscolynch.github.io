@@ -1,0 +1,98 @@
+{{- define "main" }}
+
+{{- if (and site.Params.profileMode.enabled .IsHome) }}
+{{- partial "index_profile.html" . }}
+{{- else }} {{/* if not profileMode */}}
+
+{{- if not .IsHome | and .Title }}
+<header class="page-header section-header">
+  <h1 class="section-title">{{ .Title }}</h1>
+  {{- if .Description }}
+  <p class="section-description">
+    {{ .Description | markdownify }}
+  </p>
+  {{- end }}
+</header>
+{{- end }}
+
+{{- if .Content }}
+<div class="post-content md-content">
+  {{- if not (.Param "disableAnchoredHeadings") }}
+  {{- partial "anchored_headings.html" .Content -}}
+  {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- $pages := union .RegularPages .Sections }}
+
+{{- if .IsHome }}
+{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true"  }}
+{{- end }}
+
+{{- $paginator := .Paginate $pages }}
+
+{{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
+{{- partial "home_info.html" . }}
+{{- end }}
+
+{{- $term := .Data.Term }}
+
+<div class="section-cards">
+{{- range $index, $page := $paginator.Pages }}
+<article class="section-card">
+  <a href="{{ .Permalink }}" class="section-card-link" aria-label="{{ .Title | plainify }}">
+    {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
+    {{- if and (not $isHidden) (.Param "cover.image") }}
+    <div class="section-card-cover">
+      {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
+    </div>
+    {{- end }}
+    <div class="section-card-body">
+      <h2 class="section-card-title">
+        {{- .Title }}
+        {{- if .Draft }}
+        <span class="draft-badge">borrador</span>
+        {{- end }}
+      </h2>
+      {{- if (ne (.Param "hideSummary") true) }}
+      <p class="section-card-summary">{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
+      {{- end }}
+      {{- if not (.Param "hideMeta") }}
+      <div class="section-card-meta">
+        {{- partial "post_meta.html" . -}}
+      </div>
+      {{- end }}
+    </div>
+    <span class="section-card-arrow">→</span>
+  </a>
+</article>
+{{- end }}
+</div>
+
+{{- if gt $paginator.TotalPages 1 }}
+<footer class="page-footer">
+  <nav class="pagination">
+    {{- if $paginator.HasPrev }}
+    <a class="prev" href="{{ $paginator.Prev.URL | absURL }}">
+      «&nbsp;{{ i18n "prev_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- sub $paginator.PageNumber 1 }}/{{ $paginator.TotalPages }}
+      {{- end }}
+    </a>
+    {{- end }}
+    {{- if $paginator.HasNext }}
+    <a class="next" href="{{ $paginator.Next.URL | absURL }}">
+      {{- i18n "next_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- add 1 $paginator.PageNumber }}/{{ $paginator.TotalPages }}
+      {{- end }}&nbsp;»
+    </a>
+    {{- end }}
+  </nav>
+</footer>
+{{- end }}
+
+{{- end }}{{/* end profileMode */}}
+
+{{- end }}{{- /* end main */ -}}

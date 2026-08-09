@@ -1,0 +1,104 @@
+baseURL: "https://franciscolynch.github.io/"
+title: "Francisco Lynch"
+paginate: 5
+theme: ["PaperMod"]
+defaultContentLanguage: "es"
+defaultContentLanguageInSubdir: false
+
+languages:
+  es:
+    label: "Español"
+    weight: 1
+    params:
+      description: "SysAdmin & DevOps"
+      profileMode:
+        enabled: true
+        title: "Francisco Lynch"
+        subtitle: "SysAdmin & DevOps"
+        imageUrl: ""
+        imageTitle: ""
+        buttons:
+          - name: Proyectos
+            url: /projects/
+          - name: Blog
+            url: /posts/
+          - name: Contacto
+            url: /contact/
+    menu:
+      main:
+        - identifier: projects
+          name: Proyectos
+          url: /projects/
+          weight: 10
+        - identifier: posts
+          name: Blog
+          url: /posts/
+          weight: 20
+        - identifier: contact
+          name: Contacto
+          url: /contact/
+          weight: 30
+
+  en:
+    label: "English"
+    weight: 2
+    params:
+      description: "SysAdmin & DevOps"
+      profileMode:
+        enabled: true
+        title: "Francisco Lynch"
+        subtitle: "SysAdmin & DevOps"
+        imageUrl: ""
+        imageTitle: ""
+        buttons:
+          - name: Projects
+            url: /en/projects/
+          - name: Blog
+            url: /en/posts/
+          - name: Contact
+            url: /en/contact/
+    menu:
+      main:
+        - identifier: projects
+          name: Projects
+          url: /en/projects/
+          weight: 10
+        - identifier: posts
+          name: Blog
+          url: /en/posts/
+          weight: 20
+        - identifier: contact
+          name: Contact
+          url: /en/contact/
+          weight: 30
+
+params:
+  env: production
+  author: "Francisco Lynch"
+  showReadingTime: true
+  showShareButtons: false
+  showPostNavLinks: true
+  showBreadCrumbs: true
+  showToc: true
+  disableLangToggle: false
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/FranciscoLynch"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/franciscolynch-/"
+
+  assets:
+    favicon: ""
+    disableFingerprinting: true
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

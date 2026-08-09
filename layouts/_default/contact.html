@@ -1,0 +1,80 @@
+{{- define "main" }}
+
+<div class="contact-page">
+  <header class="contact-header">
+    <h1 class="contact-title">{{ if eq .Lang "en" }}Let's Connect{{ else }}Conectemos{{ end }}</h1>
+    <p class="contact-subtitle">{{ if eq .Lang "en" }}Want to chat about infrastructure, projects, or collaborate on something? Reach out.{{ else }}Si querés charlar sobre infraestructura, proyectos o colaborar en algo, escribime.{{ end }}</p>
+  </header>
+
+  <div class="contact-cards">
+    {{- range site.Params.socialIcons }}
+    <a href="{{ trim .url " " | safeURL }}" target="_blank" rel="noopener noreferrer me" class="contact-card" title="{{ (.title | default .name) | title }}">
+      <div class="contact-card-inner">
+        <span class="contact-card-icon">
+          {{ partial "svg.html" . }}
+        </span>
+        <div class="contact-card-info">
+          <span class="contact-card-name">{{ (.title | default .name) | title }}</span>
+          <span class="contact-card-url">{{ .url | replaceRE "https?://(www\\.)?" "" | replaceRE "/$" "" }}</span>
+        </div>
+        <span class="contact-card-arrow">→</span>
+      </div>
+    </a>
+    {{- end }}
+
+    {{/* Email card - copy to clipboard */}}
+    <div class="contact-card" id="email-card" title="{{ if eq .Lang "en" }}Click to copy{{ else }}Click para copiar{{ end }}" style="cursor: pointer;" onclick="copyEmail(this)">
+      <div class="contact-card-inner">
+        <span class="contact-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </span>
+        <div class="contact-card-info">
+          <span class="contact-card-name">Email</span>
+          <span class="contact-card-url" id="email-text">lynchfranciscom@gmail.com</span>
+        </div>
+        <span class="contact-card-arrow" id="email-arrow">📋</span>
+      </div>
+    </div>
+
+    <script>
+    function copyEmail(card) {
+      const email = "lynchfranciscom@gmail.com";
+      navigator.clipboard.writeText(email).then(function() {
+        const arrow = card.querySelector('#email-arrow');
+        const originalText = arrow.textContent;
+        arrow.textContent = '✓';
+        card.classList.add('copied');
+        setTimeout(function() {
+          arrow.textContent = originalText;
+          card.classList.remove('copied');
+        }, 2000);
+      });
+    }
+    </script>
+
+    {{/* CV card */}}
+    <a href="/cv.pdf" class="contact-card" title="{{ if eq .Lang "en" }}Download CV{{ else }}Descargar CV{{ end }}">
+      <div class="contact-card-inner">
+        <span class="contact-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="12" y2="18"></line>
+            <line x1="15" y1="15" x2="12" y2="18"></line>
+          </svg>
+        </span>
+        <div class="contact-card-info">
+          <span class="contact-card-name">Curriculum Vitae</span>
+          <span class="contact-card-url">{{ if eq .Lang "en" }}Download PDF{{ else }}Descargar PDF{{ end }}</span>
+        </div>
+        <span class="contact-card-arrow">↓</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+{{- end }}{{/* end main */}}

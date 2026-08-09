@@ -1,0 +1,119 @@
+<div class="home-split">
+    {{- with site.Params.profileMode }}
+    {{/* Lado izquierdo: nombre, descripción, redes + toggle */}}
+    <div class="home-left">
+        <div class="home-left-content">
+            {{- if .imageUrl -}}
+            {{- $img := "" }}
+            {{- if not (urls.Parse .imageUrl).IsAbs }}
+                {{- $img = resources.Get .imageUrl }}
+            {{- end }}
+            {{- if $img }}
+                {{- $processableFormats := (slice "jpg" "jpeg" "png" "tif" "bmp" "gif") -}}
+                {{- if hugo.IsExtended -}}
+                    {{- $processableFormats = $processableFormats | append "webp" -}}
+                {{- end -}}
+                {{- $prod := (hugo.IsProduction | or (eq site.Params.env "production")) }}
+                {{- if and (in $processableFormats $img.MediaType.SubType) (eq $prod true)}}
+                    {{- if (not (and (not .imageHeight) (not .imageWidth))) }}
+                        {{- $img = $img.Resize (printf "%dx%d" .imageWidth .imageHeight) }}
+                    {{- else if .imageHeight }}
+                        {{- $img = $img.Resize (printf "x%d" .imageHeight) }}
+                    {{ else if .imageWidth }}
+                        {{- $img = $img.Resize (printf "%dx" .imageWidth) }}
+                    {{ else }}
+                        {{- $img = $img.Resize "150x150" }}
+                    {{- end }}
+                {{- end }}
+                <img draggable="false" src="{{ $img.Permalink }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
+                    height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" class="home-avatar" />
+            {{- else }}
+            <img draggable="false" src="{{ .imageUrl | absURL }}" alt="{{ .imageTitle | default "profile image" }}" title="{{ .imageTitle }}"
+                height="{{ .imageHeight | default 150 }}" width="{{ .imageWidth | default 150 }}" class="home-avatar" />
+            {{- end }}
+            {{- end }}
+
+            <h1 class="home-title">{{ .title | default site.Title | markdownify }}</h1>
+            <p class="home-subtitle">{{ .subtitle | markdownify }}</p>
+
+            <div class="home-social-row">
+                {{- partial "social_icons.html" -}}
+                {{- if (not site.Params.disableThemeToggle) }}
+                <button id="theme-toggle" class="theme-toggle home-theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                {{- end }}
+
+                {{/* Language toggle */}}
+                {{- if hugo.IsMultilingual }}
+                {{- $lang := $.Lang }}
+                {{- if eq $lang "es" }}
+                <a href="{{ "/en/" | relURL }}" class="lang-toggle home-lang-toggle" title="English" aria-label="English">EN</a>
+                {{- else }}
+                <a href="{{ "/" | relURL }}" class="lang-toggle home-lang-toggle" title="Español" aria-label="Español">ES</a>
+                {{- end }}
+                {{- end }}
+            </div>
+        </div>
+    </div>
+
+    {{/* Lado derecho: tarjetas de navegación */}}
+    {{- with .buttons }}
+    <div class="home-right">
+        <div class="home-cards">
+            {{- range . }}
+            <a class="home-card" href="{{ trim .url " " }}" rel="noopener" title="{{ .name }}">
+                <div class="home-card-inner">
+                    <span class="home-card-icon">
+                        {{- if eq .name "Proyectos" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        {{- else if eq .name "Blog" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                            <path d="M2 2l7.586 7.586"></path>
+                            <circle cx="11" cy="11" r="2"></circle>
+                        </svg>
+                        {{- else if eq .name "Contacto" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        {{- else }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        {{- end }}
+                    </span>
+                    <span class="home-card-title">{{ .name }}</span>
+                    <span class="home-card-arrow">→</span>
+                </div>
+            </a>
+            {{- end }}
+        </div>
+    </div>
+    {{- end }}
+    {{- end }}
+</div>
